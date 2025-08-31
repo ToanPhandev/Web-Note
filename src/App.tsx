@@ -9,7 +9,7 @@ import { SignInForm } from "./SignInForm";
 import { SignOutButton } from "./SignOutButton";
 import { Toaster, toast } from "sonner";
 import { FormEvent, useState } from "react";
-import { Id } from "../convex/_generated/dataModel";
+import { Note } from "./Note";
 
 export default function App() {
   return (
@@ -44,7 +44,6 @@ export default function App() {
 function NotesPage() {
   const notes = useQuery(api.notes.get);
   const addNote = useMutation(api.notes.add);
-  const removeNote = useMutation(api.notes.remove);
   const [newNote, setNewNote] = useState("");
 
   async function handleAddNote(e: FormEvent) {
@@ -59,16 +58,6 @@ function NotesPage() {
       toast.success("Đã thêm ghi chú!");
     } catch (error) {
       toast.error("Không thể thêm ghi chú.");
-      console.error(error);
-    }
-  }
-
-  async function handleDeleteNote(id: Id<"notes">) {
-    try {
-      await removeNote({ id });
-      toast.success("Đã xóa ghi chú!");
-    } catch (error) {
-      toast.error("Không thể xóa ghi chú.");
       console.error(error);
     }
   }
@@ -109,34 +98,7 @@ function NotesPage() {
           <h2 className="text-2xl font-semibold">Ghi chú của bạn</h2>
           <ul className="space-y-4">
             {notes.map((note) => (
-              <li
-                key={note._id}
-                className="bg-gray-50 p-4 rounded-lg flex justify-between items-start shadow-sm border"
-              >
-                <p className="flex-1 whitespace-pre-wrap break-words mr-4">
-                  {note.text}
-                </p>
-                <button
-                  onClick={() => handleDeleteNote(note._id)}
-                  className="text-red-500 hover:text-red-700 font-bold transition-colors p-1 rounded-full"
-                  aria-label="Xóa ghi chú"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </li>
+              <Note key={note._id} note={note} />
             ))}
           </ul>
         </div>

@@ -52,3 +52,26 @@ export const remove = mutation({
     await ctx.db.delete(args.id);
   },
 });
+
+export const update = mutation({
+  args: {
+    id: v.id("notes"),
+    text: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("You must be logged in to update a note.");
+    }
+    const note = await ctx.db.get(args.id);
+    if (!note) {
+      throw new Error("Note not found.");
+    }
+    if (note.userId !== userId) {
+      throw new Error("You are not authorized to update this note.");
+    }
+    await ctx.db.patch(args.id, {
+      text: args.text,
+    });
+  },
+});
