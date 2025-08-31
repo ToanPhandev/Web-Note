@@ -44,7 +44,9 @@ export default function App() {
 function NotesPage() {
   const notes = useQuery(api.notes.get);
   const addNote = useMutation(api.notes.add);
+  const generateUploadUrl = useMutation(api.notes.generateUploadUrl);
   const [newNote, setNewNote] = useState("");
+  const [file, setFile] = useState<File | null>(null);
 
   async function handleAddNote(e: FormEvent) {
     e.preventDefault();
@@ -52,9 +54,28 @@ function NotesPage() {
       toast.error("Ghi chú không được để trống.");
       return;
     }
+
+    let storageId: string | undefined = undefined;
+    let fileName: string | undefined = undefined;
+    let fileType: string | undefined = undefined;
+
+    if (file) {
+      const postUrl = await generateUploadUrl();
+      const result = await fetch(postUrl, {
+        method: "POST",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+      const { storageId: newStorageId } = await result.json();
+      storageId = newStorageId;
+      fileName = file.name;
+      fileType = file.type;
+    }
+
     try {
-      await addNote({ text: newNote });
+      await addNote({ text: newNote, storageId, fileName, fileType });
       setNewNote("");
+      setFile(null);
       toast.success("Đã thêm ghi chú!");
     } catch (error) {
       toast.error("Không thể thêm ghi chú.");
@@ -71,13 +92,19 @@ function NotesPage() {
           placeholder="Viết ghi chú của bạn ở đây..."
           className="w-full p-4 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-brand-primary h-32 text-lg"
         />
-        <button
-          type="submit"
-          className="self-end px-6 py-2 bg-brand-primary text-brand-text font-semibold rounded-lg hover:bg-brand-primary-hover transition-colors disabled:opacity-50"
-          disabled={!newNote.trim()}
-        >
-          Thêm Ghi Chú
-        </button>
+        <div className="flex justify-between items-center">
+            <input type="file" accept="image/*,application/pdf" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+            <button
+              type="submit"
+              className="self-end px-6 py-2 bg-brand-primary text-brand-text font-semibold rounded-lg hover:bg-brand-primary-hover transition-colors disabled:opacity-50 flex items-center gap-2"
+              disabled={!newNote.trim()}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                </svg>
+              Thêm Ghi Chú
+            </button>
+        </div>
       </form>
 
       {notes === undefined && (

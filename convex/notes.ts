@@ -1,7 +1,19 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { Id } from "./_generated/dataModel";
+
+export const generateUploadUrl = mutation(async (ctx) => {
+  return await ctx.storage.generateUploadUrl();
+});
+
+export const getFileUrl = query({
+  args: {
+    storageId: v.id("_storage"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.storage.getUrl(args.storageId);
+  },
+});
 
 export const get = query({
   handler: async (ctx) => {
@@ -20,6 +32,9 @@ export const get = query({
 export const add = mutation({
   args: {
     text: v.string(),
+    storageId: v.optional(v.id("_storage")),
+    fileName: v.optional(v.string()),
+    fileType: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -29,6 +44,9 @@ export const add = mutation({
     await ctx.db.insert("notes", {
       userId,
       text: args.text,
+      storageId: args.storageId,
+      fileName: args.fileName,
+      fileType: args.fileType,
     });
   },
 });
@@ -49,6 +67,11 @@ export const remove = mutation({
     if (note.userId !== userId) {
       throw new Error("You are not authorized to delete this note.");
     }
+
+    if (note.storageId) {
+      await ctx.storage.delete(note.storageId);
+    }
+
     await ctx.db.delete(args.id);
   },
 });
@@ -57,6 +80,9 @@ export const update = mutation({
   args: {
     id: v.id("notes"),
     text: v.string(),
+    storageId: v.optional(v.id("_storage")),
+    fileName: v.optional(v.string()),
+    fileType: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -70,8 +96,16 @@ export const update = mutation({
     if (note.userId !== userId) {
       throw new Error("You are not authorized to update this note.");
     }
+
+    if (note.storageId && note.storageId !== args.storageId) {
+        await ctx.storage.delete(note.storageId);
+    }
+
     await ctx.db.patch(args.id, {
       text: args.text,
+      storageId: args.storageId,
+      fileName: args.fileName,
+      fileType: args.fileType,
     });
   },
 });

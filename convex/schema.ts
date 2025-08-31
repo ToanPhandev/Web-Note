@@ -6,6 +6,9 @@ const applicationTables = {
   notes: defineTable({
     userId: v.id("users"),
     text: v.string(),
+    storageId: v.optional(v.id("_storage")),
+    fileName: v.optional(v.string()),
+    fileType: v.optional(v.string()),
   }).index("by_user", ["userId"]),
 };
 
