@@ -97,9 +97,9 @@ export function Note({ note }: NoteProps) {
             className="w-full p-2 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-brand-primary"
           />
             {note.storageId && !removeFile && (
-                <div className="flex items-center gap-2">
+                <div>
                     <NoteFile storageId={note.storageId} fileName={note.fileName} fileType={note.fileType} />
-                    <button onClick={() => setRemoveFile(true)} className="text-red-500 font-semibold flex items-center gap-1">
+                    <button onClick={() => setRemoveFile(true)} className="text-red-500 font-semibold flex items-center gap-1 mt-1">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clipRule="evenodd" />
                         </svg>
