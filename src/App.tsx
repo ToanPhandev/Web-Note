@@ -10,6 +10,8 @@ import { SignInForm } from "./SignInForm";
 import { SignOutButton } from "./SignOutButton";
 import { Toaster, toast } from "sonner";
 import { Note } from "./Note";
+import { Id } from "../convex/_generated/dataModel";
+// mới
 
 export default function App() {
   return (
@@ -58,7 +60,7 @@ function NotesPage() {
       return;
     }
 
-    let storageId: string | undefined = undefined;
+     let storageId: Id<"_storage"> | undefined = undefined;
     let fileName: string | undefined = undefined;
     let fileType: string | undefined = undefined;
 
@@ -70,17 +72,13 @@ function NotesPage() {
         body: file,
       });
       const { storageId: newStorageId } = await result.json();
-      storageId = newStorageId;
+      storageId = newStorageId as Id<"_storage">;
       fileName = file.name;
       fileType = file.type;
     }
 
     try {
-      await addNote({ text: newNote,
-
-        
-        
-        fileName, fileType });
+      await addNote({ text: newNote,storageId,fileName, fileType });
       setNewNote("");
       setFile(null);
       if (fileInputRef.current) {

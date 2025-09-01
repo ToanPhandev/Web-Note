@@ -105,7 +105,7 @@ export function Note({ note }: NoteProps) {
         body: file,
       });
       const { storageId: newStorageId } = await result.json();
-      storageId = newStorageId;
+      storageId = newStorageId as Id<"_storage">;
       fileName = file.name;
       fileType = file.type;
     }
