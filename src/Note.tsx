@@ -42,11 +42,11 @@ function NoteFile({
         href={fileUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-blue-600 hover:underline flex items-center gap-2 bg-gray-100 p-2 rounded-lg"
+        className="flex min-w-0 items-center gap-2 rounded-lg bg-gray-100 p-2 text-blue-600 hover:underline"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6"
+          className="h-6 w-6 flex-shrink-0"
           viewBox="0 0 20 20"
           fill="currentColor"
         >
@@ -56,7 +56,7 @@ function NoteFile({
             clipRule="evenodd"
           />
         </svg>
-        {fileName}
+        <span className="truncate">{fileName}</span>
       </a>
     );
   }
@@ -65,7 +65,7 @@ function NoteFile({
       href={fileUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-blue-600 hover:underline"
+      className="block truncate text-blue-600 hover:underline"
     >
       {fileName}
     </a>
@@ -150,17 +150,21 @@ export function Note({ note }: NoteProps) {
             onChange={(e) => setEditedText(e.target.value)}
             className="w-full p-2 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"
           />
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col gap-2">
             {note.storageId && !removeFile && (
-              <div className="flex-shrink-0">
+              <div className="min-w-0 overflow-hidden">
                 <NoteFile
                   storageId={note.storageId}
                   fileName={note.fileName}
                   fileType={note.fileType}
                 />
+              </div>
+            )}
+            <div className="flex items-center gap-4">
+              {note.storageId && !removeFile && (
                 <button
                   onClick={() => setRemoveFile(true)}
-                  className="text-red-600 font-semibold flex items-center gap-1 mt-1 text-sm"
+                  className="flex items-center gap-1 text-sm font-semibold text-red-600"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -176,37 +180,41 @@ export function Note({ note }: NoteProps) {
                   </svg>
                   Xóa tệp
                 </button>
-              </div>
-            )}
-            <div className="flex-grow">
-              <input
-                type="file"
-                accept="image/*,application/pdf"
-                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-                ref={fileInputRef}
-                className="hidden"
-                id={`file-upload-${note._id}`}
-              />
-              <label
-                htmlFor={`file-upload-${note._id}`}
-                className="cursor-pointer px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition-colors flex items-center gap-2 justify-center"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
+              )}
+              <div className="flex-grow">
+                <input
+                  type="file"
+                  accept="image/*,application/pdf"
+                  onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                  ref={fileInputRef}
+                  className="hidden"
+                  id={`file-upload-${note._id}`}
+                />
+                <label
+                  htmlFor={`file-upload-${note._id}`}
+                  className="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-gray-200 px-4 py-2 font-semibold text-gray-700 transition-colors hover:bg-gray-300"
                 >
-                  <path d="M5.5 13.5a.5.5 0 01.5-.5h8a.5.5 0 010 1H6a.5.5 0 01-.5-.5z" />
-                  <path d="M5 8a.5.5 0 01.5-.5h8a.5.5 0 010 1H5.5A.5.5 0 015 8z" />
-                  <path
-                    fillRule="evenodd"
-                    d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm2-1a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1V5a1 1 0 00-1-1H4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                {file ? file.name : "Thay đổi tệp"}
-              </label>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path d="M5.5 13.5a.5.5 0 01.5-.5h8a.5.5 0 010 1H6a.5.5 0 01-.5-.5z" />
+                    <path d="M5 8a.5.5 0 01.5-.5h8a.5.5 0 010 1H5.5A.5.5 0 015 8z" />
+                    <path
+                      fillRule="evenodd"
+                      d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm2-1a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1V5a1 1 0 00-1-1H4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  {file ? (
+                    <span className="truncate">{file.name}</span>
+                  ) : (
+                    "Thay đổi tệp"
+                  )}
+                </label>
+              </div>
             </div>
           </div>
           <div className="flex gap-2 self-end mt-2">
