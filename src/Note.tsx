@@ -181,7 +181,7 @@ export function Note({ note }: NoteProps) {
                   Xóa tệp
                 </button>
               )}
-              <div className="flex-grow">
+              <div className="flex-grow min-w-0">
                 <input
                   type="file"
                   accept="image/*,application/pdf"
