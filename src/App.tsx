@@ -1,9 +1,9 @@
 import React, { FormEvent, useState, useRef } from "react";
 import {
   Authenticated,
-  Unauthenticated,
   useMutation,
   useQuery,
+  useConvexAuth,
 } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { LoginForm } from "./components/login-form";
@@ -11,44 +11,78 @@ import { SignOutButton } from "./SignOutButton";
 import { Toaster, toast } from "sonner";
 import { Note } from "./Note";
 import { Id } from "../convex/_generated/dataModel";
-// mới
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 
+// The main App component is now the router
 export default function App() {
+  return (
+    <>
+      <Routes>
+        <Route path="/" element={<Root />} />
+        <Route element={<Layout />}>
+          <Route path="/Signin" element={<SignInPage />} />
+          <Route
+            path="/Homepage"
+            element={
+              <Authenticated>
+                <NotesPage />
+              </Authenticated>
+            }
+          />
+        </Route>
+      </Routes>
+      <Toaster position="top-center" />
+    </>
+  );
+}
+
+// Root component to handle redirection
+function Root() {
+  const { isLoading, isAuthenticated } = useConvexAuth();
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+  return isAuthenticated ? (
+    <Navigate to="/Homepage" replace />
+  ) : (
+    <Navigate to="/Signin" replace />
+  );
+}
+
+// Layout component
+function Layout() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-100 text-gray-800">
       <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-sm h-16 flex justify-between items-center border-b px-4 sm:px-6 lg:px-8">
         <h1 className="text-2xl font-bold text-gray-900">Ghi Chú Nhanh</h1>
-        <SignOutButton />
+        <Authenticated>
+          <SignOutButton />
+        </Authenticated>
       </header>
       <main className="flex-1 p-4 sm:p-6 md:p-8">
         <div className="max-w-4xl mx-auto">
-          <Authenticated>
-            <NotesPage />
-          </Authenticated>
-          <Unauthenticated>
-            <div className="text-center py-16">
-              <h2 className="text-4xl font-bold mb-4 text-gray-900">
-             
-
-
-              </h2>
-              <p className="text-lg mb-8 text-gray-600">
-
-
-                 
-              
-              </p>
-              <div className="max-w-md mx-auto">
-                <LoginForm />
-              </div>
-            </div>
-          </Unauthenticated>
+          <Outlet />
         </div>
       </main>
-      <Toaster position="top-center" />
     </div>
   );
 }
+
+// SignInPage component
+function SignInPage() {
+  return (
+    <div className="text-center py-16">
+      <div className="max-w-md mx-auto">
+        <LoginForm />
+      </div>
+    </div>
+  );
+}
+
 
 function NotesPage() {
   const notes = useQuery(api.notes.get);
