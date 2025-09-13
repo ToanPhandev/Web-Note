@@ -12,15 +12,53 @@ import { Label } from "@/components/ui/label"
 import { useAuthActions } from "@convex-dev/auth/react"
 import { useState } from "react"
 import { toast } from "sonner"
+import { useNavigate } from "react-router-dom"
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   const { signIn } = useAuthActions()
+  const navigate = useNavigate()
   const [flow, setFlow] = useState<"signIn" | "signUp">("signIn")
   const [submitting, setSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+
+  const handlePasswordSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setSubmitting(true)
+    try {
+      const formData = new FormData(e.target as HTMLFormElement)
+      formData.set("flow", flow)
+      await signIn("password", formData)
+      navigate("/Homepage")
+    } catch (error: any) {
+      let toastTitle = ""
+      if (error.message.includes("Invalid password")) {
+        toastTitle = "Mật khẩu không hợp lệ. Vui lòng thử lại."
+      } else {
+        toastTitle =
+          flow === "signIn"
+            ? "Không thể đăng nhập, bạn có muốn đăng ký không?"
+            : "Không thể đăng ký, bạn có muốn đăng nhập không?"
+      }
+      toast.error(toastTitle)
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const handleAnonymousSignIn = async () => {
+    setSubmitting(true)
+    try {
+      await signIn("anonymous")
+      navigate("/Homepage")
+    } catch (error) {
+      toast.error("Không thể đăng nhập ẩn danh.")
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -34,27 +72,7 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault()
-              setSubmitting(true)
-              const formData = new FormData(e.target as HTMLFormElement)
-              formData.set("flow", flow)
-              void signIn("password", formData).catch((error) => {
-                let toastTitle = ""
-                if (error.message.includes("Invalid password")) {
-                  toastTitle = "Mật khẩu không hợp lệ. Vui lòng thử lại."
-                } else {
-                  toastTitle =
-                    flow === "signIn"
-                      ? "Không thể đăng nhập, bạn có muốn đăng ký không?"
-                      : "Không thể đăng ký, bạn có muốn đăng nhập không?"
-                }
-                toast.error(toastTitle)
-                setSubmitting(false)
-              })
-            }}
-          >
+          <form onSubmit={handlePasswordSignIn}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
@@ -64,6 +82,7 @@ export function LoginForm({
                   type="email"
                   placeholder="m@example.com"
                   required
+                  disabled={submitting}
                 />
               </div>
               <div className="grid gap-2">
@@ -82,11 +101,13 @@ export function LoginForm({
                     name="password"
                     type={showPassword ? "text" : "password"}
                     required
+                    disabled={submitting}
                   />
                   <button
                     type="button"
                     className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500"
                     onClick={() => setShowPassword(!showPassword)}
+                    disabled={submitting}
                   >
                     {showPassword ? (
                       <svg
@@ -150,7 +171,8 @@ export function LoginForm({
               <Button
                 variant="outline"
                 className="w-full"
-                onClick={() => void signIn("anonymous")}
+                onClick={handleAnonymousSignIn}
+                disabled={submitting}
               >
                 Đăng nhập ẩn danh
               </Button>
@@ -165,6 +187,7 @@ export function LoginForm({
                 type="button"
                 className="text-blue-600 hover:underline font-medium cursor-pointer"
                 onClick={() => setFlow(flow === "signIn" ? "signUp" : "signIn")}
+                disabled={submitting}
               >
                 {flow === "signIn" ? "Đăng ký ngay" : "Đăng nhập ngay"}
               </button>
