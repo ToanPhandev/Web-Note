@@ -28,12 +28,17 @@ export default function App() {
           <Unauthenticated>
             <div className="text-center py-16">
               <h2 className="text-4xl font-bold mb-4 text-gray-900">
-                Chào mừng bạn!
+             
+
+
               </h2>
               <p className="text-lg mb-8 text-gray-600">
-                Vui lòng đăng nhập để bắt đầu ghi chú.
+
+
+                 
+              
               </p>
-              <div className="max-w-sm mx-auto">
+              <div className="max-w-md mx-auto">
                 <LoginForm />
               </div>
             </div>
@@ -183,3 +188,10 @@ function NotesPage() {
     </div>
   );
 }
+
+
+/*  Chào mừng bạn! */
+
+/*
+Vui lòng đăng nhập để bắt đầu ghi chú.
+*/
