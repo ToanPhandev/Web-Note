@@ -6,7 +6,7 @@ import {
   useQuery,
 } from "convex/react";
 import { api } from "../convex/_generated/api";
-import { SignInForm } from "./SignInForm";
+import { LoginForm } from "./components/login-form";
 import { SignOutButton } from "./SignOutButton";
 import { Toaster, toast } from "sonner";
 import { Note } from "./Note";
@@ -34,7 +34,7 @@ export default function App() {
                 Vui lòng đăng nhập để bắt đầu ghi chú.
               </p>
               <div className="max-w-sm mx-auto">
-                <SignInForm />
+                <LoginForm />
               </div>
             </div>
           </Unauthenticated>
