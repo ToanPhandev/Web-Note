@@ -42,7 +42,7 @@ function NoteFile({
         href={fileUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex min-w-0 items-center gap-2 rounded-lg bg-gray-100 p-2 text-blue-600 hover:underline"
+        className="flex min-w-0 items-center gap-2 rounded-lg bg-gray-100 dark:bg-gray-700 p-2 text-blue-600 dark:text-blue-400 hover:underline"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -65,7 +65,7 @@ function NoteFile({
       href={fileUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="block truncate text-blue-600 hover:underline"
+      className="block truncate text-blue-600 dark:text-blue-400 hover:underline"
     >
       {fileName}
     </a>
@@ -142,13 +142,13 @@ export function Note({ note }: NoteProps) {
   }
 
   return (
-    <li className="bg-white p-4 rounded-lg shadow-md border border-gray-200 flex flex-col gap-4">
+    <li className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 flex flex-col gap-4">
       {isEditing ? (
         <div className="flex-1 flex flex-col gap-4">
           <textarea
             value={editedText}
             onChange={(e) => setEditedText(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"
+            className="w-full p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-lg"
           />
           <div className="flex flex-col gap-2">
             {note.storageId && !removeFile && (
@@ -164,7 +164,7 @@ export function Note({ note }: NoteProps) {
               {note.storageId && !removeFile && (
                 <button
                   onClick={() => setRemoveFile(true)}
-                  className="flex items-center gap-1 text-sm font-semibold text-red-600"
+                  className="flex items-center gap-1 text-sm font-semibold text-red-600 dark:text-red-400"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -192,7 +192,7 @@ export function Note({ note }: NoteProps) {
                 />
                 <label
                   htmlFor={`file-upload-${note._id}`}
-                  className="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-gray-200 px-4 py-2 font-semibold text-gray-700 transition-colors hover:bg-gray-300"
+                  className="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-gray-200 dark:bg-gray-600 px-4 py-2 font-semibold text-gray-700 dark:text-gray-200 transition-colors hover:bg-gray-300 dark:hover:bg-gray-500"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -238,7 +238,7 @@ export function Note({ note }: NoteProps) {
             </button>
             <button
               onClick={() => setIsEditing(false)}
-              className="px-4 py-2 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 transition-colors flex items-center gap-2"
+              className="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors flex items-center gap-2"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -259,13 +259,13 @@ export function Note({ note }: NoteProps) {
       ) : (
         <>
           <div className="flex-1 flex justify-between items-start">
-            <p className="flex-1 whitespace-pre-wrap break-words mr-4 text-lg">
+            <p className="flex-1 whitespace-pre-wrap break-words mr-4 text-lg dark:text-gray-200">
               {note.text}
             </p>
             <div className="flex gap-2">
               <button
                 onClick={() => setIsEditing(true)}
-                className="text-blue-600 hover:text-blue-800 font-bold transition-colors p-2 rounded-full hover:bg-gray-200"
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-bold transition-colors p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
                 aria-label="Chỉnh sửa ghi chú"
               >
                 <svg
@@ -285,7 +285,7 @@ export function Note({ note }: NoteProps) {
               </button>
               <button
                 onClick={handleDeleteNote}
-                className="text-red-600 hover:text-red-800 font-bold transition-colors p-2 rounded-full hover:bg-gray-200"
+                className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 font-bold transition-colors p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
                 aria-label="Xóa ghi chú"
               >
                 <svg

@@ -62,12 +62,12 @@ export function LoginForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
+      <Card className="dark:bg-gray-800">
         <CardHeader>
-          <CardTitle className="text-2xl">
+          <CardTitle className="text-2xl dark:text-white">
             {flow === "signIn" ? "Đăng nhập" : "Đăng ký"}
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="dark:text-gray-400">
             Hãy điền email bên dưới để đăng nhập vào tài khoản của bạn.
           </CardDescription>
         </CardHeader>
@@ -75,7 +75,7 @@ export function LoginForm({
           <form onSubmit={handlePasswordSignIn}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="dark:text-white">Email</Label>
                 <Input
                   id="email"
                   name="email"
@@ -83,14 +83,15 @@ export function LoginForm({
                   placeholder="m@example.com"
                   required
                   disabled={submitting}
+                  className="dark:bg-gray-700 dark:text-white"
                 />
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="password">Mật Khẩu</Label>
+                  <Label htmlFor="password" className="dark:text-white">Mật Khẩu</Label>
                   <a
                     href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline dark:text-gray-400"
                   >
                     Quên mật khẩu?
                   </a>
@@ -102,10 +103,11 @@ export function LoginForm({
                     type={showPassword ? "text" : "password"}
                     required
                     disabled={submitting}
+                    className="dark:bg-gray-700 dark:text-white"
                   />
                   <button
                     type="button"
-                    className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500"
+                    className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 dark:text-gray-400"
                     onClick={() => setShowPassword(!showPassword)}
                     disabled={submitting}
                   >
@@ -170,14 +172,14 @@ export function LoginForm({
               </Button>
               <Button
                 variant="outline"
-                className="w-full"
+                className="w-full dark:text-white dark:border-gray-600 dark:hover:bg-gray-700"
                 onClick={handleAnonymousSignIn}
                 disabled={submitting}
               >
                 Đăng nhập ẩn danh
               </Button>
             </div>
-            <div className="mt-4 text-center text-sm">
+            <div className="mt-4 text-center text-sm dark:text-gray-400">
               <span>
                 {flow === "signIn"
                   ? "Chưa có tài khoản? "
@@ -185,7 +187,7 @@ export function LoginForm({
               </span>
               <button
                 type="button"
-                className="text-blue-600 hover:underline font-medium cursor-pointer"
+                className="text-blue-600 hover:underline font-medium cursor-pointer dark:text-blue-400"
                 onClick={() => setFlow(flow === "signIn" ? "signUp" : "signIn")}
                 disabled={submitting}
               >
