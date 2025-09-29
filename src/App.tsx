@@ -12,13 +12,14 @@ import { Toaster, toast } from "sonner";
 import { Note } from "./Note";
 import { Id } from "../convex/_generated/dataModel";
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { HomePage } from "./components/HomePage";
 
 // The main App component is now the router
 export default function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Root />} />
+        <Route path="/" element={<HomePage />} />
         <Route element={<Layout />}>
           <Route path="/Signin" element={<SignInPage />} />
           <Route
