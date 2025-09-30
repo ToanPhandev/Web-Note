@@ -11,7 +11,7 @@ import { SignOutButton } from "./SignOutButton";
 import { Toaster, toast } from "sonner";
 import { Note } from "./Note";
 import { Id } from "../convex/_generated/dataModel";
-import { Routes, Route, Navigate, Outlet, Link } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet, Link, useLocation } from "react-router-dom";
 import { HomePage } from "./components/HomePage";
 import { useTheme } from "./components/theme-provider";
 import { Sun, Moon } from "lucide-react";
@@ -59,6 +59,7 @@ function Root() {
 // Layout component
 function Layout() {
   const { theme, setTheme } = useTheme();
+  const location = useLocation();
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
@@ -67,9 +68,11 @@ function Layout() {
       <header className="sticky top-0 z-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm h-16 flex justify-between items-center border-b border-gray-200 dark:border-gray-700 px-4 sm:px-6 lg:px-8">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Ghi Chú Nhanh</h1>
         <div className="flex items-center gap-4">
-          <Authenticated>
-            <SignOutButton />
-          </Authenticated>
+          {location.pathname !== "/Signin" && (
+            <Authenticated>
+              <SignOutButton />
+            </Authenticated>
+          )}
           <button
             onClick={toggleTheme}
             className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
