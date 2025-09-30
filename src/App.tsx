@@ -16,15 +16,14 @@ import { HomePage } from "./components/HomePage";
 import { useTheme } from "./components/theme-provider";
 import { Sun, Moon } from "lucide-react";
 import { Sidebar } from "./components/Sidebar";
+import { WorkspaceProvider, useWorkspace } from "./contexts/WorkspaceContext";
 
-// The main App component is now the router
 export default function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<Root />} />
         <Route element={<Layout />}>
-          <Route path="/Signin" element={<SignInPage />} />
           <Route
             path="/Homepage"
             element={
@@ -33,6 +32,7 @@ export default function App() {
               </Authenticated>
             }
           />
+          <Route path="/Signin" element={<SignInPage />} />
         </Route>
       </Routes>
       <Toaster position="top-center" />
@@ -56,10 +56,6 @@ function Root() {
     <Navigate to="/Signin" replace />
   );
 }
-
-import { WorkspaceProvider } from "./contexts/WorkspaceContext";
-
-// ...
 
 // Layout component
 function Layout() {
@@ -120,11 +116,6 @@ function SignInPage() {
     </div>
   );
 }
-
-
-import { useWorkspace } from "./contexts/WorkspaceContext";
-
-// ...
 
 function NotesPage() {
   const { selectedWorkspaceId } = useWorkspace();
