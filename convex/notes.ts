@@ -16,14 +16,17 @@ export const getFileUrl = query({
 });
 
 export const get = query({
-  handler: async (ctx) => {
+  args: {
+    workspaceId: v.id("workspaces"),
+  },
+  handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
       return [];
     }
     return await ctx.db
       .query("notes")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
       .order("desc")
       .collect();
   },
@@ -31,6 +34,7 @@ export const get = query({
 
 export const add = mutation({
   args: {
+    workspaceId: v.id("workspaces"),
     text: v.string(),
     storageId: v.optional(v.id("_storage")),
     fileName: v.optional(v.string()),
@@ -43,6 +47,7 @@ export const add = mutation({
     }
     await ctx.db.insert("notes", {
       userId,
+      workspaceId: args.workspaceId,
       text: args.text,
       storageId: args.storageId,
       fileName: args.fileName,

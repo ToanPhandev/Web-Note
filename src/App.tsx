@@ -15,6 +15,7 @@ import { Routes, Route, Navigate, Outlet, Link, useLocation } from "react-router
 import { HomePage } from "./components/HomePage";
 import { useTheme } from "./components/theme-provider";
 import { Sun, Moon } from "lucide-react";
+import { Sidebar } from "./components/Sidebar";
 
 // The main App component is now the router
 export default function App() {
@@ -56,6 +57,10 @@ function Root() {
   );
 }
 
+import { WorkspaceProvider } from "./contexts/WorkspaceContext";
+
+// ...
+
 // Layout component
 function Layout() {
   const { theme, setTheme } = useTheme();
@@ -64,29 +69,38 @@ function Layout() {
     setTheme(theme === "dark" ? "light" : "dark");
   };
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-      <header className="sticky top-0 z-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm h-16 flex justify-between items-center border-b border-gray-200 dark:border-gray-700 px-4 sm:px-6 lg:px-8">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Ghi Chú Nhanh</h1>
-        <div className="flex items-center gap-4">
-          {location.pathname !== "/Signin" && (
+    <WorkspaceProvider>
+      <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+        <header className="sticky top-0 z-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm h-16 flex justify-between items-center border-b border-gray-200 dark:border-gray-700 px-4 sm:px-6 lg:px-8">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Ghi Chú Nhanh</h1>
+          <div className="flex items-center gap-4">
+            {location.pathname !== "/Signin" && (
+              <Authenticated>
+                <SignOutButton />
+              </Authenticated>
+            )}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+            >
+              {theme === "dark" ? <Sun /> : <Moon />}
+            </button>
+          </div>
+        </header>
+        <div className="flex flex-1 overflow-hidden">
+          {location.pathname === "/Homepage" && (
             <Authenticated>
-              <SignOutButton />
+              <Sidebar />
             </Authenticated>
           )}
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-          >
-            {theme === "dark" ? <Sun /> : <Moon />}
-          </button>
+          <main className="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto">
+            <div className="max-w-4xl mx-auto">
+              <Outlet />
+            </div>
+          </main>
         </div>
-      </header>
-      <main className="flex-1 p-4 sm:p-6 md:p-8">
-        <div className="max-w-4xl mx-auto">
-          <Outlet />
-        </div>
-      </main>
-    </div>
+      </div>
+    </WorkspaceProvider>
   );
 }
 
@@ -108,8 +122,16 @@ function SignInPage() {
 }
 
 
+import { useWorkspace } from "./contexts/WorkspaceContext";
+
+// ...
+
 function NotesPage() {
-  const notes = useQuery(api.notes.get);
+  const { selectedWorkspaceId } = useWorkspace();
+  const notes = useQuery(
+    api.notes.get,
+    selectedWorkspaceId ? { workspaceId: selectedWorkspaceId } : "skip"
+  );
   const addNote = useMutation(api.notes.add);
   const generateUploadUrl = useMutation(api.notes.generateUploadUrl);
   const [newNote, setNewNote] = useState("");
@@ -118,12 +140,16 @@ function NotesPage() {
 
   async function handleAddNote(e: FormEvent) {
     e.preventDefault();
+    if (!selectedWorkspaceId) {
+      toast.error("Vui lòng chọn một không gian làm việc trước khi thêm ghi chú.");
+      return;
+    }
     if (newNote.trim() === "") {
       toast.error("Ghi chú không được để trống.");
       return;
     }
 
-     let storageId: Id<"_storage"> | undefined = undefined;
+    let storageId: Id<"_storage"> | undefined = undefined;
     let fileName: string | undefined = undefined;
     let fileType: string | undefined = undefined;
 
@@ -141,7 +167,13 @@ function NotesPage() {
     }
 
     try {
-      await addNote({ text: newNote,storageId,fileName, fileType });
+      await addNote({ 
+        workspaceId: selectedWorkspaceId,
+        text: newNote,
+        storageId,
+        fileName, 
+        fileType 
+      });
       setNewNote("");
       setFile(null);
       if (fileInputRef.current) {
@@ -163,8 +195,9 @@ function NotesPage() {
         <textarea
           value={newNote}
           onChange={(e) => setNewNote(e.target.value)}
-          placeholder="Viết ghi chú của bạn ở đây..."
+          placeholder={selectedWorkspaceId ? "Viết ghi chú của bạn ở đây..." : "Vui lòng chọn hoặc tạo một không gian làm việc."}
           className="w-full p-4 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 h-32 text-lg"
+          disabled={!selectedWorkspaceId}
         />
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
@@ -175,10 +208,13 @@ function NotesPage() {
               ref={fileInputRef}
               className="hidden"
               id="file-upload"
+              disabled={!selectedWorkspaceId}
             />
             <label
               htmlFor="file-upload"
-              className="cursor-pointer px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 font-semibold rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors flex items-center gap-2"
+              className={`cursor-pointer px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 font-semibold rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors flex items-center gap-2 ${
+                !selectedWorkspaceId && "opacity-50 cursor-not-allowed"
+              }`}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -199,7 +235,7 @@ function NotesPage() {
           <button
             type="submit"
             className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
-            disabled={!newNote.trim()}
+            disabled={!newNote.trim() || !selectedWorkspaceId}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -218,15 +254,22 @@ function NotesPage() {
         </div>
       </form>
 
-      {notes === undefined && (
+      {notes === undefined && selectedWorkspaceId && (
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-gray-100 mx-auto"></div>
         </div>
       )}
 
-      {notes && notes.length === 0 && (
+      {!selectedWorkspaceId && (
         <div className="text-center text-gray-500 dark:text-gray-400 py-12">
-          <p className="text-xl">Chưa có ghi chú nào.</p>
+          <p className="text-xl">Chưa chọn không gian làm việc.</p>
+          <p>Vui lòng chọn hoặc tạo một không gian làm việc từ thanh bên.</p>
+        </div>
+      )}
+
+      {notes && notes.length === 0 && selectedWorkspaceId && (
+        <div className="text-center text-gray-500 dark:text-gray-400 py-12">
+          <p className="text-xl">Chưa có ghi chú nào trong không gian làm việc này.</p>
           <p>Hãy tạo ghi chú đầu tiên của bạn!</p>
         </div>
       )}
