@@ -120,3 +120,33 @@ export const update = mutation({
     await ctx.db.patch(args.id, { name: args.name });
   },
 });
+
+export const migrateWorkspaces = mutation({
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return;
+    }
+
+    const userWorkspaces = await ctx.db
+      .query("workspaces")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
+
+    for (const workspace of userWorkspaces) {
+      if (!workspace.path) {
+        let path = slugify(workspace.name);
+        let existing = await ctx.db
+          .query("workspaces")
+          .withIndex("by_path", (q) => q.eq("path", path))
+          .first();
+
+        if (existing) {
+          const randomSuffix = Math.random().toString(36).substring(2, 7);
+          path = `${path}-${randomSuffix}`;
+        }
+        await ctx.db.patch(workspace._id, { path: path });
+      }
+    }
+  },
+});

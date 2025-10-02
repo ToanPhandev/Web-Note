@@ -5,7 +5,7 @@ import { authTables } from "@convex-dev/auth/server";
 const applicationTables = {
   notes: defineTable({
     userId: v.id("users"),
-    workspaceId: v.id("workspaces"),
+    workspaceId: v.optional(v.id("workspaces")),
     text: v.string(),
     storageId: v.optional(v.id("_storage")),
     fileName: v.optional(v.string()),
