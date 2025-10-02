@@ -114,32 +114,3 @@ export const update = mutation({
     });
   },
 });
-
-export const migrateNotes = mutation({
-  handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return;
-    }
-
-    const unclassifiedWorkspace = await ctx.db
-      .query("workspaces")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .filter((q) => q.eq(q.field("name"), "Chưa Phân Loại"))
-      .first();
-
-    if (!unclassifiedWorkspace) {
-      return;
-    }
-
-    const orphanedNotes = await ctx.db
-      .query("notes")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .filter((q) => q.eq(q.field("workspaceId"), undefined))
-      .collect();
-
-    for (const note of orphanedNotes) {
-      await ctx.db.patch(note._id, { workspaceId: unclassifiedWorkspace._id });
-    }
-  },
-});
