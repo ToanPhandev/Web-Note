@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Id } from '../../convex/_generated/dataModel';
@@ -27,8 +27,30 @@ export function Sidebar() {
   const addWorkspace = useMutation(api.workspaces.add);
   const removeWorkspace = useMutation(api.workspaces.remove);
   const updateWorkspace = useMutation(api.workspaces.update);
+  const migrateWorkspaces = useMutation(api.workspaces.migrateWorkspaces);
+  const migrateNotes = useMutation(api.notes.migrateNotes);
 
   const { selectedWorkspaceId, setSelectedWorkspaceId } = useWorkspace();
+
+  const [isMigrationComplete, setIsMigrationComplete] = useState(false);
+
+  useEffect(() => {
+    if (workspaces && !isMigrationComplete) {
+      // First, ensure all workspaces have a path
+      migrateWorkspaces().then(() => {
+        // Then, ensure a default workspace exists and migrate notes
+        const unclassified = workspaces.find(w => w.name === "Chưa Phân Loại");
+        if (!unclassified) {
+          addWorkspace({ name: "Chưa Phân Loại" }).then(() => {
+            migrateNotes();
+          });
+        } else {
+          migrateNotes();
+        }
+        setIsMigrationComplete(true);
+      });
+    }
+  }, [workspaces, addWorkspace, migrateWorkspaces, migrateNotes, isMigrationComplete]);
 
   useEffect(() => {
     // Select the first workspace by default if none is selected

@@ -16,7 +16,9 @@ const applicationTables = {
   workspaces: defineTable({
     userId: v.id("users"),
     name: v.string(),
-  }).index("by_user", ["userId"]),
+    path: v.string(),
+  }).index("by_user", ["userId"])
+    .index("by_path", ["path"]),
 };
 
 export default defineSchema({

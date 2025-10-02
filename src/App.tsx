@@ -108,7 +108,7 @@ function SignInPage() {
         <p className="mb-4 text-lg text-gray-600 dark:text-gray-400">Vui lòng nhập thông tin để đăng nhập</p>
         <LoginForm />
         <div className="mt-4">
-          <Link to="/" className="text-blue-500 hover:underline">
+          <Link to="/Signin" className="text-blue-500 hover:underline">
             &larr; Quay lại trang chủ
           </Link>
         </div>
