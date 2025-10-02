@@ -23,6 +23,7 @@ export default function App() {
     <>
       <Routes>
         <Route path="/" element={<Root />} />
+        <Route path="/Welcome" element={<HomePage />} />
         <Route element={<Layout />}>
           <Route
             path="/Homepage"
@@ -53,7 +54,7 @@ function Root() {
   return isAuthenticated ? (
     <Navigate to="/Homepage" replace />
   ) : (
-    <Navigate to="/Signin" replace />
+    <Navigate to="/Welcome" replace />
   );
 }
 
@@ -108,7 +109,7 @@ function SignInPage() {
         <p className="mb-4 text-lg text-gray-600 dark:text-gray-400">Vui lòng nhập thông tin để đăng nhập</p>
         <LoginForm />
         <div className="mt-4">
-          <Link to="/Signin" className="text-blue-500 hover:underline">
+          <Link to="/Welcome" className="text-blue-500 hover:underline">
             &larr; Quay lại trang chủ
           </Link>
         </div>
