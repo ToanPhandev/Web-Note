@@ -22,7 +22,7 @@ const SidebarIcon = ({ children }: { children: React.ReactNode }) => (
   <span className="flex items-center justify-center h-5 w-5">{children}</span>
 );
 
-export function Sidebar() {
+export function Sidebar({ isOpen }: { isOpen: boolean }) {
   const workspaces = useQuery(api.workspaces.get);
   const addWorkspace = useMutation(api.workspaces.add);
   const removeWorkspace = useMutation(api.workspaces.remove);
@@ -105,8 +105,8 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="w-64 flex-shrink-0 bg-gray-100 dark:bg-gray-800 p-4 border-r border-gray-200 dark:border-gray-700 hidden md:block">
-      <div className="flex flex-col h-full">
+    <aside className={`flex-shrink-0 bg-gray-100 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 hidden md:block transition-all duration-300 ease-in-out ${isOpen ? 'w-64 p-4' : 'w-0 p-0 overflow-hidden'}`}>
+      <div className={`flex flex-col h-full transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
         <nav className="flex-1 space-y-6">
           <div>
             <div className="flex justify-between items-center px-3 mb-2">

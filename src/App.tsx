@@ -14,7 +14,7 @@ import { Id } from "../convex/_generated/dataModel";
 import { Routes, Route, Navigate, Outlet, Link, useLocation } from "react-router-dom";
 import { HomePage } from "./components/HomePage";
 import { useTheme } from "./components/theme-provider";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Sidebar } from "./components/Sidebar";
 import { WorkspaceProvider, useWorkspace } from "./contexts/WorkspaceContext";
 
@@ -62,6 +62,8 @@ function Root() {
 function Layout() {
   const { theme, setTheme } = useTheme();
   const location = useLocation();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
@@ -69,7 +71,17 @@ function Layout() {
     <WorkspaceProvider>
       <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
         <header className="sticky top-0 z-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm h-16 flex justify-between items-center border-b border-gray-200 dark:border-gray-700 px-4 sm:px-6 lg:px-8">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Ghi Chú Nhanh</h1>
+          <div className="flex items-center gap-4">
+            {location.pathname === "/Homepage" && (
+              <button
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+              >
+                {isSidebarOpen ? <PanelLeftClose /> : <PanelLeftOpen />}
+              </button>
+            )}
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Ghi Chú Nhanh</h1>
+          </div>
           <div className="flex items-center gap-4">
             {location.pathname !== "/Signin" && (
               <Authenticated>
@@ -87,7 +99,7 @@ function Layout() {
         <div className="flex flex-1 overflow-hidden">
           {location.pathname === "/Homepage" && (
             <Authenticated>
-              <Sidebar />
+              <Sidebar isOpen={isSidebarOpen} />
             </Authenticated>
           )}
           <main className="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto">
