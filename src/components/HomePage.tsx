@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useTheme } from "./theme-provider";
 import { Sun, Moon } from "lucide-react";
 
-export function HomePage() {
+export default function HomePage() {
   const { theme, setTheme } = useTheme();
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
